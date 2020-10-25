@@ -1,25 +1,17 @@
-import logo from './logo.svg';
 import './App.css';
 import './tailwind.output.css';
+/* import('http://yourjavascript.com/01202561460/steganography-min.js') */
+import React from 'react';
+import { BrowserRouter as Router, Route } from 'react-router-dom';
+
+import Dashboard from './views/Dashboard'
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <div id="App">Test</div>
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Router>
+      <Route exact path='/' component={Dashboard} />
+      </Router>
     </div>
   );
 }
