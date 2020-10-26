@@ -21,9 +21,10 @@ class Dashboard extends React.Component {
   }
 
   encodeTextIntoImage() {
-    if(this.state.dataImageURI) {
+    if(this.state.dataImageURI && document.querySelector('#secret').value.length) {
       console.log("HIDING", this.state.dataImageURI)
       document.querySelector('#encodeimg').src = steg.encode(document.querySelector('#secret').value, this.state.dataImageURI);
+      console.log("HIDING SECRET", document.querySelector('#secret').value)
     }
   }
 
@@ -51,6 +52,9 @@ class Dashboard extends React.Component {
     }
     reader.readAsDataURL(input_file[0])
   }
+
+  triggerEncodeInputFile = () => this.encodeFileInput.click()
+  triggerDecodeInputFile = () => this.decodeFileInput.click()
 
   render() {
     return (
@@ -120,14 +124,14 @@ class Dashboard extends React.Component {
             <div>
               <h2 className="mt-4 text-4xl tracking-tight leading-10 font-extrabold text-white sm:mt-5 sm:leading-none sm:text-6xl lg:mt-6 lg:text-5xl xl:text-6xl">
                 Hide your secrets
-                <br className="hidden md:inline" />
+                <br/>
                 <span className="text-indigo-400">in plain sight</span>
               </h2>
               <p className="mt-3 text-base text-gray-400 sm:mt-5 sm:text-xl lg:text-md xl:text-lg">
                 Steganography allows information to be hidden without others knowing that there is something to search for. Often this is achieved through embedding binary data in image files. 
               </p>
               <p className="mt-3 text-base text-gray-400 sm:mt-5 sm:text-xl lg:text-md xl:text-lg"> 
-                Applying steganography usually doesn't cause visible changes to the images making this technology a good fit for secret informational transfer over monitored communication.
+                Applying steganography usually doesn't cause visible changes to the images, making this technology a good fit for secret informational transfer over monitored communication.
               </p>
               <p className="mt-8 text-sm text-white uppercase tracking-wide font-semibold sm:mt-10">
                 Made for
@@ -168,36 +172,25 @@ class Dashboard extends React.Component {
   </div>
 </div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 {/* ONLINE TOOL SECTION */}
-        <div className="sm:col-span-6">
-          <label
-            htmlFor="cover_photo"
-            className="block text-sm leading-5 font-medium text-gray-700"
-          >
-            Cover photo
-          </label>
+<div className="bg-gray-800 pb-64">
+  <div>
+    <div className="flex flex-center leading-8">
+      <div className="mt-6 grid grid-cols-12 flex-1">
+        <div className="col-span-12">
+          <h3 class="text-xl leading-6 font-medium text-gray-300">
+            Information Hiding
+          </h3>
+          <p class="mt-1 text-sm leading-5 text-gray-400">
+            Upload an image file to hide information within
+          </p>
+        </div>
+        <div className="col-span-4 sm:col-span-2 lg:col-span-3"></div>
+        <div className="col-span-4 sm:col-span-8 lg:col-span-6">
           <div className="mt-2 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
             <div className="text-center">
               <svg
-                className="mx-auto h-12 w-12 text-gray-400"
+                className="mx-auto h-12 w-12 text-gray-500"
                 stroke="currentColor"
                 fill="none"
                 viewBox="0 0 48 48"
@@ -209,35 +202,130 @@ class Dashboard extends React.Component {
                   strokeLinejoin="round"
                 />
               </svg>
-              <p className="mt-1 text-sm text-gray-600">
+              <p className="mt-1 text-sm text-gray-400">
                 <button
                   type="button"
-                  className="font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:underline transition duration-150 ease-in-out"
+                  onClick={() => this.triggerEncodeInputFile()}
+                  className="font-medium text-indigo-500 hover:text-indigo-400 focus:outline-none focus:underline transition duration-150 ease-in-out"
                 >
-                  Upload a file
+                  Upload a file 
                 </button>
-                or drag and drop
+                {' '}or drag and drop
               </p>
-              <p className="mt-1 text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+              <p className="mt-1 text-xs text-gray-500">
+                PNG, JPG, GIF up to 10MB
+              </p>
             </div>
           </div>
         </div>
-
-
-        <div className="">Source Image:</div>
-        <input type="file" name="img" id="" accept="image/*" onChange={ (e) => this.readURL(e.target.files) }></input>
-        <img src="" alt="" id="rawcodeimg" className="w-5/12"/>
-
-        <input type="text" className="secret" id="secret"/>
-        <button onClick={() => this.encodeTextIntoImage()}>Hide Message Into Image</button>
-
-        <img src="" alt="" id="encodeimg" className=".w-5/12"/>
-
-        <div className="">Decode Image:</div>
-        <input type="file" name="img" id="" accept="image/*" onChange={ (e) => this.decodeImage(e.target.files) }></input>
-        {this.state.decodedSecret && !this.state.decodingError ?
-          <h2 id="decodedsecret">{this.state.decodedSecret}</h2> : <h2>ERROR</h2>}
+        <div className="col-span-4 sm:col-span-2 lg:col-span-3"></div>
         
+        {/* Textarea for secret */}
+        <p class="mt-1 text-sm leading-5 text-gray-400 col-span-12 py-2">
+          Secret Information
+        </p>
+
+        {/* Textarea for secret */}
+        <div className="col-span-5 sm:col-span-4"></div>
+          <textarea  id="secret" rows="3" class="form-textarea block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5 col-span-2 sm:col-span-4 mb-4 bg-gray-300 opacity-75"></textarea>
+        <div className="col-span-5 sm:col-span-4 "></div>
+
+        {/* Encrypt button */}
+        <div className="col-span-5 sm:col-span-5 mt-4"></div>
+        <button onClick={() => this.encodeTextIntoImage()} type="button" class="py-2 border border-transparent leading-6 font-medium rounded-2xl text-indigo-700 bg-indigo-200 hover:bg-indigo-50 focus:outline-none focus:border-indigo-300 focus:shadow-outline-indigo active:bg-indigo-200 transition ease-in-out duration-150 col-span-2 ">
+          Hide me
+        </button>
+        <div className="col-span-5 sm:col-span-5"></div>
+
+        {/* Image section */}
+        <div className="col-span-6 flex flex-col ml-18">
+          <p class="mt-1 text-sm  text-gray-400">
+            original image
+          </p>
+          <div className="opacity-50">
+            <img src="/image-original-missing2.png" id="rawcodeimg" alt="" className="w-5/12 block mx-auto"/>
+          </div>
+        </div>
+        
+        <div className="col-span-6 flex flex-col">
+          <p class="mt-1 text-sm text-gray-400 col-span-5">
+            hidden info image
+          </p>
+          <div>
+            <div className="opacity-50">
+              <img src="/encoded-image-not-ready3.png" alt="" id="encodeimg" className="w-5/12 block mx-auto"/>
+            </div>
+          </div>
+          
+        </div>
+        <input className="invisible" ref={encodeFileInput => this.encodeFileInput = encodeFileInput} type="file" name="img" id="" accept="image/*" onChange={ (e) => this.readURL(e.target.files) }/>
+      </div>
+    </div>
+    <div className="mt-6 grid grid-cols-12 flex-1">
+        <div className="col-span-12">
+          <h3 class="text-xl leading-6 font-medium text-gray-300">
+            Information Extracting
+          </h3>
+          <p class="mt-1 text-sm leading-5 text-gray-400">
+            Upload an image file containing hidden information
+          </p>
+        </div>
+        <div className="col-span-4 sm:col-span-2 lg:col-span-3"></div>
+        <div className="col-span-4 sm:col-span-8 lg:col-span-6">
+          <div className="mt-2 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+            <div className="text-center">
+              <svg
+                className="mx-auto h-12 w-12 text-gray-500"
+                stroke="currentColor"
+                fill="none"
+                viewBox="0 0 48 48"
+              >
+                <path
+                  d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                  strokeWidth={2}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              <p className="mt-1 text-sm text-gray-400">
+                <button
+                  type="button"
+                  onClick={() => this.triggerDecodeInputFile()}
+                  className="font-medium text-indigo-500 hover:text-indigo-400 focus:outline-none focus:underline transition duration-150 ease-in-out"
+                >
+                  Upload a file 
+                </button>
+                {' '}or drag and drop
+              </p>
+              <p className="mt-1 text-xs text-gray-500">
+                PNG, JPG, GIF up to 10MB
+              </p>
+            </div>
+          </div>
+        </div>
+        <div className="col-span-4 sm:col-span-2 lg:col-span-3"></div>
+        {/* {this.state.decodedSecret && !this.state.decodingError ?
+          <h2 id="decodedsecret">{this.state.decodedSecret}</h2> : <h2>ERROR</h2>} */}
+          <div className="col-span-4 sm:col-span-2 lg:col-span-3"></div>
+      </div>
+
+      <div className="col-span-12 mt-16">
+        {this.state.decodedSecret && !this.state.decodingError ?
+          <div>
+            <h3 class="text-xl leading-6 font-medium text-gray-300">
+              Your Secret Information
+            </h3>
+            <p class="mt-1 text-lg leading-5 text-gray-400" id="decodedsecret">
+              {this.state.decodedSecret}
+            </p>
+          </div> : <span>ERROR</span>     
+            }
+          <input className="invisible" type="file" name="img" id="" ref={decodeFileInput => this.decodeFileInput = decodeFileInput} accept="image/*" onChange={ (e) => this.decodeImage(e.target.files) }></input>
+      </div>
+
+  </div>
+
+</div>
 
       </div>
     );
