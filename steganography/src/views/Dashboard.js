@@ -1,5 +1,6 @@
 import React from 'react';
 import steg from '../steganography'
+import { FileDrop } from 'react-file-drop';
 
 class Dashboard extends React.Component {
   state = {
@@ -28,14 +29,76 @@ class Dashboard extends React.Component {
     }
   }
 
-  decodeImage(input_file) {
-    console.log("DECODING NOW")
+  fileDropEncode(input_file) {
+    console.log(input_file)
+    let reader = new FileReader();
+    reader.onload = e => {
+      this.setState({
+        dataImageURI: e.target.result,
+      });
+      document.querySelector('#rawcodeimg').src = e.target.result;
+    }
+    reader.readAsDataURL(input_file[0])
+  }
+
+  encodeDroppedImage() {
+    if(this.state.dataImageURI && document.querySelector('#secret').value.length) {
+      console.log("HIDING", this.state.dataImageURI)
+      document.querySelector('#encodeimg').src = steg.encode(document.querySelector('#secret').value, this.state.dataImageURI);
+      console.log("HIDING SECRET", document.querySelector('#secret').value)
+    }
+  }
+
+  fileDropDecode = (e) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files?.item(0);
+    console.log("FILES", file);
+    this.decodeDroppedImage(file)
+  }
+
+  decodeDroppedImage(input_file) {
+    console.log("DECODING NOW", input_file)
     let reader = new FileReader();
     reader.onload = e => {
       console.log(e.target.result)
       try {
         this.setState({
-          decodedSecret: steg.decode(e.target.result),
+          decodedSecret: this.cleanString(steg.decode(e.target.result)),
+          decodingError: false
+        });
+      } catch (e) {
+        // give notifaction that image contains no readable secret
+        this.setState({
+          decodingError: true,
+          decodedSecret: ' '
+        });
+      }
+/*       
+      console.log(steg.decode(e.target.result));
+      // conditional render when state is set of result
+      document.querySelector('#decodedsecret').innerText = steg.decode(e.target.result) */
+    }
+    reader.readAsDataURL(input_file)
+  }
+
+  cleanString = (input) => {
+    var output = "";
+    for (var i=0; i<input.length; i++) {
+        if (input.charCodeAt(i) <= 127) {
+            output += input.charAt(i);
+        }
+    }
+    return output;
+}
+
+  decodeImage(input_file) {
+    console.log("DECODING NOW", input_file)
+    let reader = new FileReader();
+    reader.onload = e => {
+      console.log(e.target.result)
+      try {
+        this.setState({
+          decodedSecret: this.cleanString(steg.decode(e.target.result)),
           decodingError: false
         });
       } catch (e) {
@@ -187,7 +250,7 @@ class Dashboard extends React.Component {
         </div>
         <div className="col-span-4 sm:col-span-2 lg:col-span-3"></div>
         <div className="col-span-4 sm:col-span-8 lg:col-span-6">
-          <div className="mt-2 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+          <div className="mt-2 flex justify-center px-6 pt-5 pb-6 border-2 border-none">
             <div className="text-center">
               <svg
                 className="mx-auto h-12 w-12 text-gray-500"
@@ -208,9 +271,9 @@ class Dashboard extends React.Component {
                   onClick={() => this.triggerEncodeInputFile()}
                   className="font-medium text-indigo-500 hover:text-indigo-400 focus:outline-none focus:underline transition duration-150 ease-in-out"
                 >
-                  Upload a file 
+                  Click here to upload a file 
                 </button>
-                {' '}or drag and drop
+                {' '}
               </p>
               <p className="mt-1 text-xs text-gray-500">
                 PNG, JPG, GIF up to 10MB
@@ -272,6 +335,9 @@ class Dashboard extends React.Component {
         </div>
         <div className="col-span-4 sm:col-span-2 lg:col-span-3"></div>
         <div className="col-span-4 sm:col-span-8 lg:col-span-6">
+        <FileDrop
+          onFrameDrop={(e) => this.fileDropDecode(e)}
+        >
           <div className="mt-2 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
             <div className="text-center">
               <svg
@@ -301,7 +367,9 @@ class Dashboard extends React.Component {
                 PNG, JPG, GIF up to 10MB
               </p>
             </div>
+            
           </div>
+          </FileDrop>
         </div>
         <div className="col-span-4 sm:col-span-2 lg:col-span-3"></div>
         {/* {this.state.decodedSecret && !this.state.decodingError ?
@@ -318,7 +386,7 @@ class Dashboard extends React.Component {
             <p class="mt-1 text-lg leading-5 text-gray-400" id="decodedsecret">
               {this.state.decodedSecret}
             </p>
-          </div> : <span>ERROR</span>     
+          </div> : <span class="mt-1 text-lg leading-5 text-gray-400">Could not decode secret</span>     
             }
           <input className="invisible" type="file" name="img" id="" ref={decodeFileInput => this.decodeFileInput = decodeFileInput} accept="image/*" onChange={ (e) => this.decodeImage(e.target.files) }></input>
       </div>
